@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-''' Simple pagination '''
+"""
+"""
 import csv
 import math
-from typing import List, Tuple
+from typing import List
+
+
+def index_range(page: int, page_size: int) -> tuple:
+    # """returns index range for items"""
+    return (((page - 1) * page_size), page * page_size)
 
 
 class Server:
@@ -25,20 +31,12 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
-        ''' def get page '''
-        assert type(page_size) is int and type(page) is int
-        assert page > 0
-        assert page_size > 0
-        self.dataset()
-        i = index_range(page, page_size)
-        if i[0] >= len(self.__dataset):
+        """returns a dataset for a given datarange"""
+        try:
+            assert (page > 0 or page_size > 0)
+            assert (type(page) is int or type(page_size) is int)
+            pages = index_range(page, page_size)
+            dataset = self.dataset()[pages[0]:pages[1]]
+            return dataset
+        except Exception:
             return []
-        else:
-            return self.__dataset[i[0]:i[1]]
-
-
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    ''' De*f index range '''
-    index = page * page_size - page_size
-    index_1 = index + page_size
-    return (index, index_1)
