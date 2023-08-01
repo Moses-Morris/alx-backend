@@ -8,7 +8,9 @@ app = Flask(__name__)
 @app.route("/", methods=["GET"], strict_slashes=False)
 def hello_world():
     ''' return the template '''
-    return render_template('0-index.html')
+    title = "Welcome to Holberton"
+    greeting = "Hello world"
+    return render_template('0-index.html', title=title, greeting=greeting)
 
 
 if __name__ == '__main__':
