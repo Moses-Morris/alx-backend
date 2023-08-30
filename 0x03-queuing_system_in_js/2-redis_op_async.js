@@ -1,34 +1,30 @@
-import redis from 'redis';
-const util = require('util');
-const client = redis.createClient();
+import { createClient, print } from 'redis';
+import { promisify } from 'util';
 
-client.on('connect', () => {
+const client = createClient();
+
+client.on('connect', function() {
   console.log('Redis client connected to the server');
 });
 
-client.on('error', (err) => {
-  console.error(`Redis client not connected to the server: ${err.message}`);
+client.on('error', function (err) {
+  console.log(`Redis client not connected to the server: ${err}`);
 });
 
-function setNewSchool(schoolName, value){
-    client.set(schoolName, value, function(err, result){
-	if (err) {
-	    console.log(err);
-	}else{
-	    redis.print(`Reply: OK`);
-	}
-    });
-}
+function setNewSchool(schoolName, value) {
+  client.set(schoolName, value, print);
+};
 
-const syncClient = util.promisify(client.get).bind(client);
+const get = promisify(client.get).bind(client);
 
-async function displaySchoolValue(schoolName){
-    try {
-	const result = await syncClient(schoolName);
-	console.log(result);
-    } catch (error) {
-	console.error('Error:', error);
+async function displaySchoolValue(schoolName) {
+  const result = await get(schoolName).catch((error) => {
+    if (error) {
+      console.log(error);
+      throw error;
     }
+  });
+  console.log(result);
 }
 
 displaySchoolValue('Holberton');
